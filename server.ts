@@ -40,3 +40,4 @@ app.listen(5000,async()=>{
     console.log('listening to the port 5000')
 })
 
+export default app
