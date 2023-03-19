@@ -8,7 +8,7 @@ interface IData {
   isMarried?: boolean;
 }
 
-const Data :Schema=mongoose.connect({
+const Data =new mongoose.Schema({
     name:{
         type:String,
         required:true

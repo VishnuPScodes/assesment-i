@@ -1,0 +1,117 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Ineuron"
+host: localhost:5000
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /data:
+    get:
+      description: "Returns all data"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "An array of data"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Data"
+    post:
+      description: "Creates a new data entry"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Data object"
+          required: true
+          schema:
+            $ref: "#/definitions/Data"
+      responses:
+        201:
+          description: "Data created"
+        400:
+          description: "Invalid input"
+  /data/{id}:
+    get:
+      description: "Returns a single data entry"
+      produces:
+        - application/json
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of data to return"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Data found"
+          schema:
+            $ref: "#/definitions/Data"
+        404:
+          description: "Data not found"
+    patch:
+      description: "Updates a single data entry"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of data to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Data object"
+          required: true
+          schema:
+            $ref: "#/definitions/Data"
+      responses:
+        200:
+          description: "Data updated"
+        404:
+          description: "Data not found"
+    delete:
+      description: "Deletes a single data entry"
+      consumes:
+        - application/json
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of data to delete"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Data deleted"
+        404:
+          description: "Data not found"
+definitions:
+  Data:
+    type: "object"
+    required:
+      - "name"
+      - "email"
+      - "mobile"
+    properties:
+      name:
+        type: "string"
+        example: "John Doe"
+      email:
+        type: "string"
+        example: "johndoe@example.com"
+      mobile:
+        type: "string"
+        example: "1234567890"
+      isMarried:
+        type: "boolean"
