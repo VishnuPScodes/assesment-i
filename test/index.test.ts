@@ -95,11 +95,10 @@ describe("PATCH /data/:id", () => {
 describe("POST /data", () => {
   it("should create new data successfully", async () => {
     const data = {
-      name: "John Doe",
-      email: "johndoe@example.com",
-      mobile: "1234567890",
-      age: 30,
-      address: "123 Main St, Anytown USA",
+      name: "Vishnu PS",
+      email: "psvishnu131@gmail.com",
+      mobile: '7994467158',
+      isMarried:false
     };
 
     // Send a POST request to create a new data document

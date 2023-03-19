@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import express from "express";
 import { DataModel } from "../models/data.model";
-
+import { body, validationResult } from "express-validator";
 /**
  * @swagger
  * components:
@@ -111,13 +111,12 @@ import { DataModel } from "../models/data.model";
  *               $ref: '#/components/schemas/Data'
  */
 
-
 const router = express.Router();
 //making a get request to get the data from the data base
 router.get("/", async (req, res) => {
   try {
-    const data = await DataModel.find().lean().exec();  //lean is used convert mongoose object to plain javascript obejct
-   return res.status(200).send({
+    const data = await DataModel.find().lean().exec(); //lean is used convert mongoose object to plain javascript obejct
+    return res.status(200).send({
       success: true,
       data,
     });
@@ -127,8 +126,8 @@ router.get("/", async (req, res) => {
     if (er instanceof mongoose.Error.CastError) {
       message = "Invalid parameter";
     }
-   return res.status(400).send({
-      success:false,
+    return res.status(400).send({
+      success: false,
       message,
     });
   }
@@ -155,70 +154,82 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 //post request to add data to the database
-router.post('/',async(req,res)=>{
-    try{
-      const data=await DataModel.create(req.body);
-     return res.status(201).send({
-        success:true,
-        data
-      })
+router.post(
+  "/",
+  body("name").notEmpty().isLength({ min: 2, max: 50 }),
+  body("mobile").notEmpty().isNumeric(),
+  body("isMarried").notEmpty(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      const data = await DataModel.create(req.body);
+      if (!errors.isEmpty()) {
+        return res.status(404).send({ message: errors.array() });
+      } else {
+        return res.status(201).send({
+          success: true,
+          data,
+        });
+      }
+    } catch (er) {
+      console.error(er);
+      let message = "An unknown error occurred";
+      if (er instanceof mongoose.Error.CastError) {
+        message = "Invalid parameter";
+      }
+      return res.status(400).send({
+        success: false,
+        message,
+      });
     }
-    catch(er){
-    console.error(er);
-    let message = "An unknown error occurred";
-     if (er instanceof mongoose.Error.CastError) {
-       message = "Invalid parameter";
-     }
-   return res.status(400).send({
-        success:false,
-        message
-    })
-    }
-})
+  }
+);
 
 //update request to update the data;
-router.patch('/:id',async(req,res)=>{
-    try{
-    const data=await DataModel.findByIdAndUpdate(req.params.id,req.body,{new:true}).lean().exec();
-    res.status(200).send({
-      success:true,
-      data
+router.patch("/:id", async (req, res) => {
+  try {
+    const data = await DataModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
     })
+      .lean()
+      .exec();
+    res.status(200).send({
+      success: true,
+      data,
+    });
+  } catch (er) {
+    console.error(er);
+    let message = "An unknown error occurred";
+    if (er instanceof mongoose.Error.CastError) {
+      message = "Invalid parameter";
     }
-    catch(er){
-     console.error(er);
-     let message = "An unknown error occurred";
-     if (er instanceof mongoose.Error.CastError) {
-       message = "Invalid parameter";
-     }
-     return res.status(400).send({
-       success: false,
-       message,
-     });
-    }
-})
+    return res.status(400).send({
+      success: false,
+      message,
+    });
+  }
+});
 
 //delete request
-router.delete("/:id",async (req,res)=>{
+router.delete("/:id", async (req, res) => {
   try {
-    const data=await DataModel.findByIdAndDelete(req.params.id).lean().exec();
+    const data = await DataModel.findByIdAndDelete(req.params.id).lean().exec();
     return res.status(200).send({
-      success:true,
-      data:data
-    })
+      success: true,
+      data: data,
+    });
   } catch (er) {
-     console.error(er);
-     let message = "An unknown error occurred";
-     if (er instanceof mongoose.Error.CastError) {
-       message = "Invalid parameter";
-     }
-     return res.status(400).send({
-       success: false,
-       message,
-     });
+    console.error(er);
+    let message = "An unknown error occurred";
+    if (er instanceof mongoose.Error.CastError) {
+      message = "Invalid parameter";
+    }
+    return res.status(400).send({
+      success: false,
+      message,
+    });
   }
-})
+});
 
-export default router
+export default router;
